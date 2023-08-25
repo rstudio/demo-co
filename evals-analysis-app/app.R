@@ -1,6 +1,11 @@
 library(shiny)
-library(tidyverse)
 library(bslib)
+library(thematic)
+library(tidyverse)
+library(gitlink)
+
+ggplot2::theme_set(ggplot2::theme_minimal())
+thematic_shiny()
 
 expansions <-
   read_csv("data/expansions.csv") |>
@@ -40,11 +45,15 @@ contracts <- c("Monthly", "Annual")
 
 
 ui <- page_sidebar(
+  ribbon_css("https://github.com/rstudio/demo-co/tree/main/evals-analysis-app"),
+  theme = bs_theme(bootswatch = "darkly", bg = "#222222", fg = "#86C7ED", success ="#86C7ED"),
   title = "Effectiveness of Free Evaluations by Customer Segment",
   sidebar = sidebar(title = "Select a segment of data to view",
+                    class ="bg-secondary",
                     selectInput("industry", "Select industries", choices = industries, selected = "", multiple  = TRUE),
                     selectInput("icp", "Select ICP type", choices = icps, selected = "", multiple  = TRUE),
                     selectInput("contract", "Select contract type", choices = contracts, selected = "", multiple  = TRUE),
+                    "This app compares the effectiveness of two types of free evaluations, A and B,  at converting users into customers.",
                     tags$img(src = "logo.png", width = "100%", height = "auto")),
   layout_columns(card(card_header("Conversions over time"),
                       plotOutput("line")),
@@ -61,7 +70,7 @@ ui <- page_sidebar(
                  value_box(title = "Avg Spend",
                            value = textOutput("average_spend"),
                            theme_color = "secondary"),
-                 card(card_header("Performance by subgroup"),
+                 card(card_header("Conversion rates by subgroup"),
                       tableOutput("table")))
 
 )
@@ -130,7 +139,9 @@ server <- function(input, output) {
 
   output$line <- renderPlot({
     ggplot(conversions(), aes(x = date, y = n, color = evaluation)) +
-      geom_line()
+      geom_line() +
+      theme(axis.title = element_blank()) +
+      labs(color = "Eval Type")
   })
 
   output$bar <- renderPlot({
@@ -139,15 +150,17 @@ server <- function(input, output) {
       summarise(rate = round(sum(n * success_rate) / sum(n), 2)) |>
       ggplot(aes(x = evaluation, y = rate, fill = evaluation)) +
         geom_col() +
-        guides(fill = "none")
+        guides(fill = "none") +
+        theme(axis.title = element_blank()) +
+        scale_y_continuous(limits = c(0, 100))
   })
 
   output$table <- renderTable({
     groups() |>
       select(industry, icp, contract, evaluation, success_rate) |>
       pivot_wider(names_from = evaluation, values_from = success_rate)
-  })
+  },
+  digits = 0)
 }
 
-# Run the application
 shinyApp(ui = ui, server = server)
