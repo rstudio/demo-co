@@ -9,11 +9,12 @@ thematic_shiny()
 
 expansions <-
   read_csv("data/expansions.csv") |>
-  mutate(evaluation = factor(evaluation, levels = c("None", "A", "B")))
+  mutate(evaluation = factor(evaluation, levels = c("None", "A", "B")),
+         propensity = factor(propensity, levels = c("Good", "Average", "Poor")))
 
 expansion_groups <-
   expansions |>
-  group_by(industry, icp, contract, evaluation) |>
+  group_by(industry, propensity, contract, evaluation) |>
   summarize(success_rate = round(mean(outcome == "Won")* 100),
             avg_amount = round(mean(amount)),
             avg_days = round(mean(days)),
@@ -38,7 +39,7 @@ industries <- c("Academia",
               "Pharmaceuticals",
               "Technology")
 
-icps <- c("High", "Medium", "Low")
+propensities <- c("Good", "Average", "Poor")
 contracts <- c("Monthly", "Annual")
 
 
@@ -47,13 +48,13 @@ contracts <- c("Monthly", "Annual")
 ui <- page_sidebar(
   ribbon_css("https://github.com/rstudio/demo-co/tree/main/evals-analysis-app"),
   theme = bs_theme(bootswatch = "darkly", bg = "#222222", fg = "#86C7ED", success ="#86C7ED"),
-  title = "Effectiveness of Free Evaluations by Customer Segment",
+  title = "Effectiveness of DemoCo App Free Trial by Customer Segment",
   sidebar = sidebar(title = "Select a segment of data to view",
                     class ="bg-secondary",
                     selectInput("industry", "Select industries", choices = industries, selected = "", multiple  = TRUE),
-                    selectInput("icp", "Select ICP type", choices = icps, selected = "", multiple  = TRUE),
-                    selectInput("contract", "Select contract type", choices = contracts, selected = "", multiple  = TRUE),
-                    "This app compares the effectiveness of two types of free evaluations, A and B,  at converting users into customers.",
+                    selectInput("propensity", "Select propensities to buy", choices = propensities, selected = "", multiple  = TRUE),
+                    selectInput("contract", "Select contract types", choices = contracts, selected = "", multiple  = TRUE),
+                    "This app compares the effectiveness of two types of free trials, A (30-days) and B (100-days), at converting users into customers.",
                     tags$img(src = "logo.png", width = "100%", height = "auto")),
   layout_columns(card(card_header("Conversions over time"),
                       plotOutput("line")),
@@ -61,7 +62,7 @@ ui <- page_sidebar(
                       plotOutput("bar")),
                  col_widths = c(8, 4, 4, 4, 4, 12),
                  row_heights = c(4, 1.5, 3),
-                 value_box(title = "Best Eval",
+                 value_box(title = "Recommended Trial",
                            value = textOutput("recommended_eval"),
                            theme_color = "secondary"),
                  value_box(title = "Customers",
@@ -81,8 +82,8 @@ server <- function(input, output) {
     if (is.null(input$industry)) industries else input$industry
   })
 
-  selected_icps <- reactive({
-    if (is.null(input$icp)) icps else input$icp
+  selected_propensities <- reactive({
+    if (is.null(input$propensity)) propensities else input$propensity
   })
 
   selected_contracts <- reactive({
@@ -92,7 +93,7 @@ server <- function(input, output) {
   filtered_expansions <- reactive({
     expansions |>
       filter(industry %in% selected_industries(),
-             icp %in% selected_icps(),
+             propensity %in% selected_propensities(),
              contract %in% selected_contracts())
   })
 
@@ -107,7 +108,7 @@ server <- function(input, output) {
   groups <- reactive({
     expansion_groups |>
       filter(industry %in% selected_industries(),
-             icp %in% selected_icps(),
+             propensity %in% selected_propensities(),
              contract %in% selected_contracts())
   })
 
@@ -141,7 +142,7 @@ server <- function(input, output) {
     ggplot(conversions(), aes(x = date, y = n, color = evaluation)) +
       geom_line() +
       theme(axis.title = element_blank()) +
-      labs(color = "Eval Type")
+      labs(color = "Trial Type")
   })
 
   output$bar <- renderPlot({
@@ -157,7 +158,7 @@ server <- function(input, output) {
 
   output$table <- renderTable({
     groups() |>
-      select(industry, icp, contract, evaluation, success_rate) |>
+      select(industry, propensity, contract, evaluation, success_rate) |>
       pivot_wider(names_from = evaluation, values_from = success_rate)
   },
   digits = 0)

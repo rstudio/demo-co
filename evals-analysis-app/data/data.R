@@ -14,7 +14,7 @@ industry <- c("Academia",
               "Pharmaceuticals",
               "Technology")
 
-icp <- c("High", "Medium", "Low")
+propensity <- c("Good", "Average", "Poor")
 contract <- c("Monthly", "Annual")
 
 probs <- c(4, 3, 2, 2, 0.5, 1)
@@ -40,7 +40,7 @@ industry_adjust <- c("Academia" = 0.05,
                      "Non-Profit" = 0,
                      "Pharmaceuticals" = 0.2,
                      "Technology" = 0.3)
-icp_adjust <- c("High" = 0.1, "Medium" = 0, "Low" = -0.1)
+propensity_adjust <- c("Good" = 0.1, "Average" = 0, "Poor" = -0.1)
 contract_adjust <- c("Monthly" = 0, "Annual" = 0.2)
 
 scramble <- function(vec){
@@ -49,17 +49,17 @@ scramble <- function(vec){
 }
 
 expansion_rates <-
-  expand_grid(industry, icp, contract) |>
+  expand_grid(industry, propensity, contract) |>
   mutate(n = as.numeric(n),
-         None = pmax(0.1, 0.2 + industry_adjust[industry] + icp_adjust[icp] + contract_adjust[contract]),
-         A = pmax(0.1, 0.6 + scramble(industry_adjust)[industry] + scramble(icp_adjust)[icp] + scramble(contract_adjust[contract])),
-         B = pmax(0.1, 0.7 + scramble(industry_adjust)[industry] + scramble(icp_adjust)[icp] + scramble(contract_adjust[contract])),
+         None = pmax(0.1, 0.2 + industry_adjust[industry] + propensity_adjust[propensity] + contract_adjust[contract]),
+         A = pmax(0.1, 0.6 + scramble(industry_adjust)[industry] + scramble(propensity_adjust)[propensity] + scramble(contract_adjust[contract])),
+         B = pmax(0.1, 0.7 + scramble(industry_adjust)[industry] + scramble(propensity_adjust)[propensity] + scramble(contract_adjust[contract])),
          None = round(None / (max(None) + 0.1), 2),
          A = round(A / (max(A) + 0.1), 2),
          B = round(B / (max(B) + 0.1), 2))
 
 # Build the raw data
-make_obs <- function(industry, icp, contract, n, None, A, B) {
+make_obs <- function(industry, propensity, contract, n, None, A, B) {
   none_won <- round(n * .34 * None)
   none_lost  <- round(n * .34 - none_won)
   A_won    <- round(n * .33 * A)
@@ -76,7 +76,7 @@ make_obs <- function(industry, icp, contract, n, None, A, B) {
   tibble(outcome = outcome,
          evaluation = evaluation,
          industry = industry,
-         icp = icp,
+         propensity = propensity,
          contract = contract)
 }
 
