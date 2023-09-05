@@ -1,19 +1,23 @@
+# Load packages used by the app
 library(shiny)
 library(bslib)
 library(thematic)
 library(tidyverse)
 library(gitlink)
 
+# Set the default theme for ggplot2 plots
 ggplot2::theme_set(ggplot2::theme_minimal())
+
+# Apply the CSS used by the Shiny app to the ggplot2 plots
 thematic_shiny()
 
-expansions <-
-  read_csv("data/expansions.csv") |>
+# Read data from a CSV file and perform data preprocessing
+expansions <- read_csv("data/expansions.csv") |>
   mutate(evaluation = factor(evaluation, levels = c("None", "A", "B")),
          propensity = factor(propensity, levels = c("Good", "Average", "Poor")))
 
-expansion_groups <-
-  expansions |>
+# Compute expansion rates by trial and group
+expansion_groups <- expansions |>
   group_by(industry, propensity, contract, evaluation) |>
   summarize(success_rate = round(mean(outcome == "Won")* 100),
             avg_amount = round(mean(amount)),
@@ -21,34 +25,41 @@ expansion_groups <-
             n = n()) |>
   ungroup()
 
-overall_rates <-
-  expansions |>
+# Compute expansion rates by trial
+overall_rates <- expansions |>
   group_by(evaluation) |>
   summarise(rate = round(mean(outcome == "Won"), 2))
 
+# Restructure expansion rates by trial as a vector
 rates <- structure(overall_rates$rate, names = overall_rates$evaluation)
 
-industries <- c("Academia",
-              "Energy",
-              "Finance",
-              "Government",
-              "Healthcare",
-              "Insurance",
-              "Manufacturing",
-              "Non-Profit",
-              "Pharmaceuticals",
-              "Technology")
-
+# Define lists for propensity, contract and industry choices
 propensities <- c("Good", "Average", "Poor")
 contracts <- c("Monthly", "Annual")
+industries <- c("Academia",
+                "Energy",
+                "Finance",
+                "Government",
+                "Healthcare",
+                "Insurance",
+                "Manufacturing",
+                "Non-Profit",
+                "Pharmaceuticals",
+                "Technology")
 
-
-
-
+# Define the Shiny UI layout
 ui <- page_sidebar(
+
+  # Add github link
   ribbon_css("https://github.com/rstudio/demo-co/tree/main/evals-analysis-app"),
+
+  # Set CSS theme
   theme = bs_theme(bootswatch = "darkly", bg = "#222222", fg = "#86C7ED", success ="#86C7ED"),
+
+  # Add title
   title = "Effectiveness of DemoCo App Free Trial by Customer Segment",
+
+  # Add sidebar elements
   sidebar = sidebar(title = "Select a segment of data to view",
                     class ="bg-secondary",
                     selectInput("industry", "Select industries", choices = industries, selected = "", multiple  = TRUE),
@@ -56,6 +67,8 @@ ui <- page_sidebar(
                     selectInput("contract", "Select contract types", choices = contracts, selected = "", multiple  = TRUE),
                     "This app compares the effectiveness of two types of free trials, A (30-days) and B (100-days), at converting users into customers.",
                     tags$img(src = "logo.png", width = "100%", height = "auto")),
+
+  # Layout non-sidebar elements
   layout_columns(card(card_header("Conversions over time"),
                       plotOutput("line")),
                  card(card_header("Conversion rates"),
@@ -76,8 +89,10 @@ ui <- page_sidebar(
 
 )
 
+# Define the Shiny server function
 server <- function(input, output) {
 
+  # Provide default values for industry, propensity, and contract selections
   selected_industries <- reactive({
     if (is.null(input$industry)) industries else input$industry
   })
@@ -90,6 +105,7 @@ server <- function(input, output) {
     if (is.null(input$contract)) contracts else input$contract
   })
 
+  # Filter data against selections
   filtered_expansions <- reactive({
     expansions |>
       filter(industry %in% selected_industries(),
@@ -97,6 +113,7 @@ server <- function(input, output) {
              contract %in% selected_contracts())
   })
 
+  # Compute conversions by month
   conversions <- reactive({
     filtered_expansions() |>
       mutate(date = floor_date(date, unit = "month")) |>
@@ -105,6 +122,7 @@ server <- function(input, output) {
       ungroup()
   })
 
+  # Retrieve conversion rates for selected groups
   groups <- reactive({
     expansion_groups |>
       filter(industry %in% selected_industries(),
@@ -112,6 +130,7 @@ server <- function(input, output) {
              contract %in% selected_contracts())
   })
 
+  # Render text for recommended trial
   output$recommended_eval <- renderText({
     recommendation <-
       filtered_expansions() |>
@@ -123,11 +142,13 @@ server <- function(input, output) {
     as.character(recommendation[1])
   })
 
+  # Render text for number of customers
   output$number_of_customers <- renderText({
     sum(filtered_expansions()$outcome == "Won") |>
       format(big.mark = ",")
   })
 
+  # Render text for average spend
   output$average_spend <- renderText({
       x <-
         filtered_expansions() |>
@@ -138,6 +159,7 @@ server <- function(input, output) {
       str_glue("${x}")
   })
 
+  # Render line plot for conversions over time
   output$line <- renderPlot({
     ggplot(conversions(), aes(x = date, y = n, color = evaluation)) +
       geom_line() +
@@ -145,6 +167,7 @@ server <- function(input, output) {
       labs(color = "Trial Type")
   })
 
+  # Render bar plot for conversion rates by subgroup
   output$bar <- renderPlot({
     groups() |>
       group_by(evaluation) |>
@@ -156,6 +179,7 @@ server <- function(input, output) {
         scale_y_continuous(limits = c(0, 100))
   })
 
+  # Render table for conversion rates by subgroup
   output$table <- renderTable({
     groups() |>
       select(industry, propensity, contract, evaluation, success_rate) |>
@@ -164,4 +188,5 @@ server <- function(input, output) {
   digits = 0)
 }
 
+# Create the Shiny app
 shinyApp(ui = ui, server = server)
