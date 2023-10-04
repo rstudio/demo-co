@@ -15,7 +15,10 @@ ui <- page_sidebar(
   ribbon_css("https://github.com/rstudio/demo-co/tree/main/traveling-salesperson-app"),
 
   # Set CSS theme
-  theme = bs_theme(bootswatch = "spacelab", success ="#86C7ED", base_font = "Open Sans", heading_font = "Open Sans"),
+  theme = bs_theme(bootswatch = "spacelab",
+                   success ="#86C7ED",
+                   base_font = "Open Sans",
+                   heading_font = "Open Sans"),
 
   # Add title
   title = "Traveling Salesperson Planner",
@@ -33,13 +36,16 @@ ui <- page_sidebar(
     fileInput("file", "Upload a CSV file of destinations:"), # File input widget
     markdown("Consider one of these files:
 
-             - [US National Parks](/national_parks.csv)
-             - [US State Capitals](/state_capitals.csv)
-             - [Buc-ee's Locations](/bucees.csv)"),
+             - [US National Parks](national_parks.csv)
+             - [US State Capitals](state_capitals.csv)
+             - [Buc-ee's Locations](bucees.csv)"),
     markdown("---"),
     selectizeInput("method", "Choose an algorithm", choices = algorithms),
     uiOutput("downloadButtonUI"),
-    tags$img(src = "logo.png", width = "100", height = "auto", style = "display: block; margin-left: auto; margin-right: auto;")
+    tags$img(src = "logo.png",
+             width = "100",
+             height = "auto",
+             style = "display: block; margin-left: auto; margin-right: auto;")
    ),
 
   # Map in main panel
@@ -72,7 +78,8 @@ server <- function(input, output, session) {
   output$map <- renderLeaflet({
       leaflet() |>
       setView(lng = -98.35, lat = 39.5, zoom = 3) |>
-      addProviderTiles("Stadia.AlidadeSmoothDark") |>
+      addTiles() |>
+      # addProviderTiles("Stadia.AlidadeSmoothDark") |>
       add_start(isolate(input$lat), isolate(input$long))
   })
 
@@ -115,7 +122,7 @@ server <- function(input, output, session) {
         addPolylines(lng = itinerary()$longitude,
                      lat = itinerary()$latitude,
                      group = "paths",
-                     color = "#86C7ED")
+                     color = "#040449")
     }
   })
 

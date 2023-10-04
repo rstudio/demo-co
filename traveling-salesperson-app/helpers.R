@@ -19,8 +19,6 @@ algorithms <-
        "Nearest neighbors" = "nn",
        "Repetitive nearest neighbors" = "repetitive_nn",
        "Two Edge Tour Refinement" = "two_opt",
-       "Concorde" = "concorde",
-       "Lin-Kernighan" = "linkern",
        "Identity" = "identity",
        "Random" = "random")
 
@@ -69,5 +67,5 @@ build_itinerary <- function(data, start_lat, start_long, method) {
   itinerary <- circuit[c(first_leg, second_leg)] # order to visit the destinations
 
   destinations[itinerary, ] |>
-    add_rownames(var = "visit_order")
+    rownames_to_column(var = "visit_order")
 }
