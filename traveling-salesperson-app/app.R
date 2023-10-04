@@ -26,12 +26,7 @@ ui <- page_sidebar(
   # Add sidebar elements
   sidebar = sidebar(
     width = "300",
-    "Select a starting location",
-    layout_columns(
-       numericInput("lat", "Latitude", value = 35.187, width = 150),
-       numericInput("long", "Longitude", value = -86.130, width = 150)
-    ),
-    actionButton("set", "Set", width = 100),
+    selectizeInput("city", "Select a starting location", choices = USCA312_GPS$name,  selected = "Nashville, TN"),
     markdown("---"),
     fileInput("file", "Upload a CSV file of destinations:"), # File input widget
     markdown("Consider one of these files:
@@ -43,7 +38,7 @@ ui <- page_sidebar(
     selectizeInput("method", "Choose an algorithm", choices = algorithms),
     uiOutput("downloadButtonUI"),
     tags$img(src = "logo.png",
-             width = "100",
+             width = "75%",
              height = "auto",
              style = "display: block; margin-left: auto; margin-right: auto;")
    ),
@@ -58,6 +53,12 @@ ui <- page_sidebar(
 
 # Define the server logic
 server <- function(input, output, session) {
+
+  # Lookup latitude and longitude of starting city
+  start <- reactive({
+    USCA312_GPS |>
+      filter(name == input$city)
+  })
 
   # Store the uploaded file when it's selected
   uploaded_data <- reactive({
@@ -80,14 +81,14 @@ server <- function(input, output, session) {
       setView(lng = -98.35, lat = 39.5, zoom = 3) |>
       addTiles() |>
       # addProviderTiles("Stadia.AlidadeSmoothDark") |>
-      add_start(isolate(input$lat), isolate(input$long))
+      add_start(isolate(start()$lat), isolate(start()$long))
   })
 
   # Update starting marker
-  observeEvent(input$set, {
+  observeEvent(start(), {
     leafletProxy("map", session) |>
       removeMarker(layerId = "start") |>
-      add_start(isolate(input$lat), isolate(input$long))
+      add_start(start()$lat, start()$long)
   })
 
   # Add/update destination markers
@@ -105,10 +106,10 @@ server <- function(input, output, session) {
 
   # create an itinerary
   itinerary <- reactive({
-    input$set
+    location <- start()
     build_itinerary(data = map_data(),
-                    start_lat = isolate(input$lat),
-                    start_long = isolate(input$long),
+                    start_lat = location$lat,
+                    start_long = location$long,
                     method = input$method)
   })
 
@@ -133,7 +134,8 @@ server <- function(input, output, session) {
       paste0(stub, "_itinerary.csv")
     },
     content = function(file) {
-      write_csv(itinerary(), file)
+      data <- clean_for_download(itinerary())
+      write_csv(data, file)
     }
   )
 

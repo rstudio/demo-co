@@ -1,6 +1,8 @@
 # helpers.R
 library(TSP)
 
+data("USCA312_GPS")
+
 # Make start icon for map
 start_marker <- makeAwesomeIcon(
   icon = "home",
@@ -39,10 +41,14 @@ clean_for_map <- function(data) {
   data
 }
 
+
+
+
 # Adds starting marker
 add_start <- function(map, lat, long) {
   addAwesomeMarkers(map, lat = lat, lng = long, layerId = "start", icon = start_marker)
 }
+
 
 # Makes itinerary table
 build_itinerary <- function(data, start_lat, start_long, method) {
@@ -68,4 +74,9 @@ build_itinerary <- function(data, start_lat, start_long, method) {
 
   destinations[itinerary, ] |>
     rownames_to_column(var = "visit_order")
+}
+
+clean_for_download <- function(data) {
+  data |>
+    slice(-c(1, nrow(data)))  # remove starting location
 }
