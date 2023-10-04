@@ -127,6 +127,12 @@ server <- function(input, output, session) {
     }
   })
 
+  # Render the download button in the UI if uploaded_data() exists
+  output$downloadButtonUI <- renderUI({
+    req(uploaded_data())
+    downloadButton("downloadData", "Download Itinerary")
+  })
+
   # Create a download handler for the uploaded data
   output$downloadData <- downloadHandler(
     filename = function() {
@@ -138,12 +144,6 @@ server <- function(input, output, session) {
       write_csv(data, file)
     }
   )
-
-  # Render the download button in the UI if uploaded_data() exists
-  output$downloadButtonUI <- renderUI({
-    req(uploaded_data())
-    downloadButton("downloadData", "Download Itinerary")
-  })
 
 }
 

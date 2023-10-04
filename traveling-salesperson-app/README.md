@@ -82,6 +82,82 @@ To use the app:
     <figcaption aria-hidden="true">“The Download Button”</figcaption>
     </figure>
 
+# To build a similar app
+
+The Traveling Salesperson Planner app is written in R with the [Shiny]()
+package. Shiny makes it easy to create an interactive web app with only
+R code: you do not need to know HTML, CSS, JavaScript, or any web
+development skills. (Click here to learn about [Shiny for
+Python](https://shiny.posit.co/py/)).
+
+[This tutorial](https://shiny.posit.co/getstarted.html) explains how to
+write a basic web app with Shiny.
+
+There are three unique things about the Travelling Salesperson Planner
+app:
+
+1.  It [uses a theme from the bslib
+    package](https://rstudio.github.io/bslib/articles/theming/index.html)
+    to make the app look more visually appealing.
+
+    ``` r
+    theme = bs_theme(bootswatch = "spacelab",
+                     success ="#86C7ED",
+                     base_font = "Open Sans",
+                     heading_font = "Open Sans")
+    ```
+
+2.  It allows the user to upload a file to use as input with a
+    [fileInput
+    widget](https://mastering-shiny.org/action-transfer.html#upload).
+
+    ``` r
+    fileInput("file", "Upload a CSV file of destinations:")
+    ```
+
+3.  It checks the user’s file and provides a pop alert with the
+    [shinyalert](https://github.com/daattali/shinyalert) package if
+    anything looks amiss.
+
+    ``` r
+    # helpers.R
+    if (!valid) {
+      shinyalert("Cannot create itinerary", "Your csv file should contain a column named latitude and a column named longitude.")
+    }
+    ```
+
+4.  It uses an interactive leaflet map to display locations on a map.
+    You can learn more about using leaflet maps in Shiny apps
+    [here](https://rstudio.github.io/leaflet/).
+
+    ``` r
+    leafletOutput("map")
+    ```
+
+5.  It allows the user to download the results with a [download
+    button](https://mastering-shiny.org/action-transfer.html#download).
+    This is a button that triggers a download handler.
+
+    ``` r
+    # Render the download button in the UI if uploaded_data() exists
+    output$downloadButtonUI <- renderUI({
+      req(uploaded_data())
+      downloadButton("downloadData", "Download Itinerary")
+    })
+
+    # Create a download handler for the uploaded data
+    output$downloadData <- downloadHandler(
+      filename = function() {
+        stub <- str_remove(input$file$name, "\\.csv$")
+        paste0(stub, "_itinerary.csv")
+      },
+      content = function(file) {
+        data <- clean_for_download(itinerary())
+        write_csv(data, file)
+      }
+    )
+    ```
+
 [^1]: Hahsler M, Hornik K (2007). “TSP - Infrastructure for the
     traveling salesperson problem.” Journal of Statistical Software,
     23(2), 1-21. ISSN 1548-7660, <doi:10.18637/jss.v023.i02>
