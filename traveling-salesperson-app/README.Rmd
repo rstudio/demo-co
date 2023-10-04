@@ -8,7 +8,7 @@ output: github_document
 The Traveling Salesperson Planner Shiny app demo lets you upload a file of destinations and download an efficiently ordered itinerary.
 
 - [View the app](https://colorado.posit.co/rsc/content/bb3d1bbc-0eb3-4c2d-ac2c-5e8959cf8eaf/) on Posit Connect
-- [Play with the code]() on Posit Cloud
+- [Play with the code](https://posit.cloud/content/6708777) on Posit Cloud
 
 
 ## To use the app
