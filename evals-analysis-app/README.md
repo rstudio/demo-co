@@ -23,7 +23,8 @@ Analysts, they simply click a button.
 
 - [View the app](https://colorado.posit.co/rsc/Free-Trial-App/) on Posit
   Connect
-- [Play with the code]() on Posit Cloud
+- [Play with the code](https://posit.cloud/content/6716482) on Posit
+  Cloud
 
 ## To use the app
 

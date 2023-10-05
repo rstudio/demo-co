@@ -13,7 +13,7 @@ The Free Trial by Customer Segment app compares the effectiveness of two types o
 The app allows decisions makers to explore various segments of customer data in real time, so they can quickly decide which free trial to adopt and under which circumstances. When a decision maker wants to look at the data in a new way, they don't need to wait to meet with their Analysts, they simply click a button.
 
 - [View the app](https://colorado.posit.co/rsc/Free-Trial-App/) on Posit Connect
-- [Play with the code]() on Posit Cloud
+- [Play with the code](https://posit.cloud/content/6716482) on Posit Cloud
 
 
 ## To use the app
