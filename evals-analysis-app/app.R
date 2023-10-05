@@ -5,47 +5,14 @@ library(thematic)
 library(tidyverse)
 library(gitlink)
 
+source("setup.R")
+
 # Set the default theme for ggplot2 plots
 ggplot2::theme_set(ggplot2::theme_minimal())
 
 # Apply the CSS used by the Shiny app to the ggplot2 plots
 thematic_shiny()
 
-# Read data from a CSV file and perform data preprocessing
-expansions <- read_csv("data/expansions.csv") |>
-  mutate(evaluation = factor(evaluation, levels = c("None", "A", "B")),
-         propensity = factor(propensity, levels = c("Good", "Average", "Poor")))
-
-# Compute expansion rates by trial and group
-expansion_groups <- expansions |>
-  group_by(industry, propensity, contract, evaluation) |>
-  summarize(success_rate = round(mean(outcome == "Won")* 100),
-            avg_amount = round(mean(amount)),
-            avg_days = round(mean(days)),
-            n = n()) |>
-  ungroup()
-
-# Compute expansion rates by trial
-overall_rates <- expansions |>
-  group_by(evaluation) |>
-  summarise(rate = round(mean(outcome == "Won"), 2))
-
-# Restructure expansion rates by trial as a vector
-rates <- structure(overall_rates$rate, names = overall_rates$evaluation)
-
-# Define lists for propensity, contract and industry choices
-propensities <- c("Good", "Average", "Poor")
-contracts <- c("Monthly", "Annual")
-industries <- c("Academia",
-                "Energy",
-                "Finance",
-                "Government",
-                "Healthcare",
-                "Insurance",
-                "Manufacturing",
-                "Non-Profit",
-                "Pharmaceuticals",
-                "Technology")
 
 # Define the Shiny UI layout
 ui <- page_sidebar(
@@ -73,8 +40,6 @@ ui <- page_sidebar(
                       plotOutput("line")),
                  card(card_header("Conversion rates"),
                       plotOutput("bar")),
-                 col_widths = c(8, 4, 4, 4, 4, 12),
-                 row_heights = c(4, 1.5, 3),
                  value_box(title = "Recommended Trial",
                            value = textOutput("recommended_eval"),
                            theme_color = "secondary"),
@@ -85,8 +50,9 @@ ui <- page_sidebar(
                            value = textOutput("average_spend"),
                            theme_color = "secondary"),
                  card(card_header("Conversion rates by subgroup"),
-                      tableOutput("table")))
-
+                      tableOutput("table")),
+                 col_widths = c(8, 4, 4, 4, 4, 12),
+                 row_heights = c(4, 1.5, 3))
 )
 
 # Define the Shiny server function
