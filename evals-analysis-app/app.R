@@ -21,7 +21,10 @@ ui <- page_sidebar(
   ribbon_css("https://github.com/rstudio/demo-co/tree/main/evals-analysis-app"),
 
   # Set CSS theme
-  theme = bs_theme(bootswatch = "darkly", bg = "#222222", fg = "#86C7ED", success ="#86C7ED"),
+  theme = bs_theme(bootswatch = "darkly",
+                   bg = "#222222",
+                   fg = "#86C7ED",
+                   success ="#86C7ED"),
 
   # Add title
   title = "Effectiveness of DemoCo App Free Trial by Customer Segment",
