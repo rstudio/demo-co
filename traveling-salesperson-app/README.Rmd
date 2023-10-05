@@ -7,7 +7,7 @@ output: github_document
 
 The Traveling Salesperson Planner Shiny app demo lets you upload a file of destinations and download an efficiently ordered itinerary.
 
-- [View the app](https://colorado.posit.co/rsc/content/bb3d1bbc-0eb3-4c2d-ac2c-5e8959cf8eaf/) on Posit Connect
+- [View the app](https://colorado.posit.co/rsc/traveling-salesperson-app/) on Posit Connect
 - [Play with the code](https://posit.cloud/content/6708777) on Posit Cloud
 
 
@@ -42,9 +42,37 @@ To use the app:
 
 # To build a similar app
 
-The Traveling Salesperson Planner app is written in R with the [Shiny]() package. Shiny makes it easy to create an interactive web app with only R code: you do not need to know HTML, CSS, JavaScript, or any web development skills. (Click here to learn about [Shiny for Python](https://shiny.posit.co/py/)).
+The Traveling Salesperson Planner app is written in R with the [Shiny](https://shiny.posit.co/) package. Shiny makes it easy to create an interactive web app with only R code: you do not need to know HTML, CSS, JavaScript, or any web development skills. (Click here to learn about [Shiny for Python](https://shiny.posit.co/py/)).
 
-[This tutorial](https://shiny.posit.co/getstarted.html) explains how to write a basic web app with Shiny. 
+[This tutorial](https://shiny.posit.co/getstarted.html) explains how to write a basic web app with Shiny. Like all Shiny apps, the Traveling Salesperson Planner app is composed of:
+
+1. A user interface that collects input values and displays outputs:
+
+    ```r
+    # Define the Shiny UI layout
+    ui <- page_sidebar(
+      # Everything that appears in the UI
+    )
+    ```
+
+2. A server function that tells R how to build outputs from input values:
+
+    ```r
+    # Define the Shiny server function
+    server <- function(input, output) {
+      # A list of definitions for outputs and intermediate objects, 
+      # as well as code to run to create those objects
+    }
+    ```
+
+3. And a call to `shinyApp()`, which brings the user interface and server function together.
+
+    ```r
+    # Create the Shiny app
+    shinyApp(ui = ui, server = server)
+    ```
+
+### Notable features
 
 There are five unique things about the Traveling Salesperson Planner app:
 
