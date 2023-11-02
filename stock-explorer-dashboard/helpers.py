@@ -4,9 +4,13 @@ import yfinance as yf
 import pandas as pd
 import cufflinks as cf
 
-# ticker -> data
-def get_data(ticker, period = "1y"):
-    return yf.Ticker(ticker.upper()).history(period = period)
+# ticker -> stock
+def get_stock(ticker):
+    return yf.Ticker(ticker.upper())
+
+# stock -> data
+def get_data(stock, period = "1y"):
+    return stock.history(period = period)
 
 # data -> current price
 def get_price(data):
@@ -38,7 +42,7 @@ def make_OHLC_table(data):
 # data -> candlestick chart
 def make_candlestick_chart(data, ticker):
     cf.go_offline()
-    qf=cf.QuantFig(data,title="Price History",legend='top',name=ticker, up_color='#44bb70', down_color='#040548')
+    qf=cf.QuantFig(data,legend='top',name=ticker, up_color='#44bb70', down_color='#040548')
     qf.add_sma()
     qf.add_volume(up_color='#44bb70', down_color='#040548')
     return qf.iplot()

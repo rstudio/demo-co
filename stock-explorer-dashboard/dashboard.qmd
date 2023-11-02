@@ -1,0 +1,99 @@
+---
+title: "Stock Explorer"
+author: "Ty Coon"
+logo: logo.png
+format: 
+  dashboard:
+    theme: [yeti, custom.scss]
+---
+
+```{python}
+#| tags: [parameters]
+
+# to render w/ a different ticker parameter:
+# quarto render dashboard.qmd -P ticker:GOOG
+
+ticker = "BA"
+```
+
+```{python}
+import helpers
+stock = helpers.get_stock(ticker)
+data = helpers.get_data(stock)
+```
+
+
+## Row
+
+```{python}
+from IPython.display import Markdown
+Markdown("**{symbol}** --- {longName} --- [{website}]({website})"
+    .format(**stock.info))
+```
+
+## Row
+
+```{python}
+#| component: valuebox
+#| title: "Current Price"
+dict(
+    icon = "currency-dollar",
+    color = "secondary",
+    value = helpers.get_price(data)
+)
+```
+
+
+```{python}
+#| component: valuebox
+#| title: "Change"
+change = helpers.get_change(data)
+dict(
+    value = change['amount'],
+    icon = change['icon'],
+    color = change['color']
+) 
+```
+
+```{python}
+#| component: valuebox
+#| title: "Percent Change"
+dict(
+    icon = "percent",
+    color = "light",
+    value = change['percent'],
+) 
+```
+
+## Row
+
+### Column {width=75%}
+
+```{python}
+#| title: Price History
+#| padding: 0
+helpers.make_candlestick_chart(data, ticker.upper())
+```
+
+### Column {width=25%}
+
+```{python}
+ohlc = helpers.make_OHLC_table(data)
+```
+
+::: {.card}
+
+#### Last Close: `{python} ohlc['date']`
+
+|    	 |                           |
+|:-------|--------------------------:|
+| Open	 | `{python} ohlc['open']`   |
+| High	 | `{python} ohlc['high']`   |
+| Low	 | `{python} ohlc['low']`    |
+| Close	 | `{python} ohlc['close']`  |
+| Volume | `{python} ohlc['volume']` |
+: {.striped}
+
+:::
+
+
