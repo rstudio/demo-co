@@ -12,7 +12,7 @@ The Traveling Salesperson Planner Shiny app demo lets you upload a file
 of destinations and download an efficiently ordered itinerary.
 
 - [View the
-  app](https://colorado.posit.co/rsc/traveling-salesperson-app/) on
+  app](https://pub.current.posit.team/traveling-salesperson-app/) on
   Posit Connect
 - [Play with the code](https://posit.cloud/content/6708777) on Posit
   Cloud
@@ -22,7 +22,7 @@ of destinations and download an efficiently ordered itinerary.
 To use the app:
 
 1.  **Visit the app
-    [here](https://colorado.posit.co/rsc/content/bb3d1bbc-0eb3-4c2d-ac2c-5e8959cf8eaf/).**
+    [here](https://pub.current.posit.team/traveling-salesperson-app/).**
     The app is hosted on [Posit
     Connect](https://posit.co/products/enterprise/connect/), a hosting
     platform for data driven content. You can use Posit Connect to
