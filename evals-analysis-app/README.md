@@ -21,8 +21,8 @@ and under which circumstances. When a decision maker wants to look at
 the data in a new way, they don’t need to wait to meet with their
 Analysts, they simply click a button.
 
-- [View the app](https://colorado.posit.co/rsc/Free-Trial-App/) on Posit
-  Connect
+- [View the app](https://pub.current.posit.team/free-trials-app/) on
+  Posit Connect
 - [Play with the code](https://posit.cloud/content/6716482) on Posit
   Cloud
 
@@ -31,8 +31,8 @@ Analysts, they simply click a button.
 To use the app:
 
 1.  **Visit the app
-    [here](https://colorado.posit.co/rsc/Free-Trial-App/).** The app is
-    hosted on [Posit
+    [here](https://pub.current.posit.team/free-trials-app/).** The app
+    is hosted on [Posit
     Connect](https://posit.co/products/enterprise/connect/), a hosting
     platform for data driven content. You can use Posit Connect to
     publish models, reports, etc. securely within your enterprise; or to
