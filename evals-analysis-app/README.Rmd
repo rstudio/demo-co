@@ -12,7 +12,7 @@ The Free Trial by Customer Segment app compares the effectiveness of two types o
 
 The app allows decisions makers to explore various segments of customer data in real time, so they can quickly decide which free trial to adopt and under which circumstances. When a decision maker wants to look at the data in a new way, they don't need to wait to meet with their Analysts, they simply click a button.
 
-- [View the app](https://colorado.posit.co/rsc/Free-Trial-App/) on Posit Connect
+- [View the app](https://pub.current.posit.team/free-trials-app/) on Posit Connect
 - [Play with the code](https://posit.cloud/content/6716482) on Posit Cloud
 
 
@@ -20,7 +20,7 @@ The app allows decisions makers to explore various segments of customer data in 
 
 To use the app:
 
-1. **Visit the app [here](https://colorado.posit.co/rsc/Free-Trial-App/).** The app is hosted on [Posit Connect](https://posit.co/products/enterprise/connect/), a hosting platform for data driven content. You can use Posit Connect to publish models, reports, etc. securely within your enterprise; or to deploy data products to your customers and manage access.
+1. **Visit the app [here](https://pub.current.posit.team/free-trials-app/).** The app is hosted on [Posit Connect](https://posit.co/products/enterprise/connect/), a hosting platform for data driven content. You can use Posit Connect to publish models, reports, etc. securely within your enterprise; or to deploy data products to your customers and manage access.
 
 2. **Select a combination of industries to view**. Type in one or more industry names, or select industries from the drop down menu. The app will adjust to focus only on results for customers from these industries. Leave this field blank to focus on all industries.
 
