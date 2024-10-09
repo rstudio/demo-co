@@ -8,7 +8,7 @@ library(gitlink)
 source("setup.R")
 
 # Set the default theme for ggplot2 plots
-ggplot2::theme_set(ggplot2::theme_minimal())
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 22))
 
 # Apply the CSS used by the Shiny app to the ggplot2 plots
 thematic_shiny()
@@ -131,7 +131,7 @@ server <- function(input, output) {
   # Render line plot for conversions over time
   output$line <- renderPlot({
     ggplot(conversions(), aes(x = date, y = n, color = evaluation)) +
-      geom_line() +
+      geom_line(linewidth = 1) +
       theme(axis.title = element_blank()) +
       labs(color = "Trial Type")
   })
